@@ -2,9 +2,9 @@
 
 namespace Hsndmr\CappadociaViewer\Tests;
 
+use Hsndmr\CappadociaViewer\CappadociaViewerServiceProvider;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Orchestra\Testbench\TestCase as Orchestra;
-use Hsndmr\CappadociaViewer\CappadociaViewerServiceProvider;
 
 class TestCase extends Orchestra
 {

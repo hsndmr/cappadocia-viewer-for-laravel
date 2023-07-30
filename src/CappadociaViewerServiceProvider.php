@@ -2,9 +2,9 @@
 
 namespace Hsndmr\CappadociaViewer;
 
+use Hsndmr\CappadociaViewer\Commands\CappadociaViewerCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
-use Hsndmr\CappadociaViewer\Commands\CappadociaViewerCommand;
 
 class CappadociaViewerServiceProvider extends PackageServiceProvider
 {
