@@ -1,12 +1,12 @@
 <?php
 
-namespace VendorName\Skeleton\Commands;
+namespace Hsndmr\CappadociaViewer\Commands;
 
 use Illuminate\Console\Command;
 
-class SkeletonCommand extends Command
+class CappadociaViewerCommand extends Command
 {
-    public $signature = 'skeleton';
+    public $signature = 'cappadocia-viewer-for-laravel';
 
     public $description = 'My command';
 
