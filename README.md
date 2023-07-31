@@ -11,7 +11,7 @@
 You can install the package via composer:
 
 ```bash
-composer require hsndmr/cappadocia-viewer-for-laravel
+composer require hsndmr/cappadocia-viewer-for-laravel --dev
 ```
 
 You can publish the config file with:
