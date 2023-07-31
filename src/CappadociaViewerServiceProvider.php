@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Hsndmr\CappadociaViewer;
 
-use Hsndmr\CappadociaViewer\Commands\CappadociaViewerCommand;
 use Spatie\LaravelPackageTools\Package;
 use Hsndmr\CappadociaViewer\Watchers\Watcher;
 use Hsndmr\CappadociaViewer\Watchers\LogWatcher;
