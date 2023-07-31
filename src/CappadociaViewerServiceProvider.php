@@ -24,8 +24,7 @@ class CappadociaViewerServiceProvider extends PackageServiceProvider
          */
         $package
             ->name('cappadocia-viewer')
-            ->hasConfigFile()
-            ->hasCommand(CappadociaViewerCommand::class);
+            ->hasConfigFile();
     }
 
     public function packageRegistered(): void
