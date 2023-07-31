@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Hsndmr\CappadociaViewer\Tests;
 
-use Illuminate\Database\Eloquent\Factories\Factory;
 use Orchestra\Testbench\TestCase as Orchestra;
+use Illuminate\Database\Eloquent\Factories\Factory;
 use Hsndmr\CappadociaViewer\CappadociaViewerServiceProvider;
 
 class TestCase extends Orchestra
@@ -24,13 +26,8 @@ class TestCase extends Orchestra
         ];
     }
 
-    public function getEnvironmentSetUp($app)
+    public function getEnvironmentSetUp($app): void
     {
         config()->set('database.default', 'testing');
-
-        /*
-        $migration = include __DIR__.'/../database/migrations/create_cappadocia-viewer-for-laravel_table.php.stub';
-        $migration->up();
-        */
     }
 }
