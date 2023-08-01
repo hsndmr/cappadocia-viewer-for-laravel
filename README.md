@@ -1,4 +1,7 @@
 # Cappadocia Viewer for Laravel
+<picture>
+  <img alt="Cappadocia Viewer for Laravel" src="./art/app.png">
+</picture>
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/hsndmr/cappadocia-viewer-for-laravel.svg?style=flat-square)](https://packagist.org/packages/hsndmr/cappadocia-viewer-for-laravel)
 [![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/hsndmr/cappadocia-viewer-for-laravel/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/hsndmr/cappadocia-viewer-for-laravel/actions?query=workflow%3Arun-tests+branch%3Amain)
@@ -7,6 +10,8 @@
 
 
 ## Installation
+
+Prior to installing this package, ensure that you have already installed  [Cappadocia Viewer](https://github.com/hsndmr/cappadocia-viewer/releases/tag/0.0.2)
 
 You can install the package via composer:
 
@@ -31,6 +36,11 @@ return [
 ```
 
 ## Usage
+If you want to send a message manually to Cappadocia Viewer, you can use `cappadocia` method. You can see examples below.
+
+````php
+cappadocia('your message')->send(['context' => 'data']);
+````
 
 ## Testing
 
