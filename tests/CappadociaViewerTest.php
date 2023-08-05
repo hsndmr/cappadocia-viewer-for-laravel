@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Hsndmr\CappadociaViewer\Enums\BadgeType;
 use Hsndmr\CappadociaViewer\CappadociaViewer;
 use Hsndmr\CappadociaViewer\Enums\ViewerType;
+use Hsndmr\CappadociaViewer\Watchers\QueryWatcher;
 use Hsndmr\CappadociaViewer\CappadociaViewerClient;
 
 it('sends a viewer message with specified badge, type, and context, then resets data', function (): void {
@@ -78,4 +79,28 @@ it('resets the viewer data to default values', function (): void {
 
     $messageProperty = new ReflectionProperty($viewer, 'message');
     expect($messageProperty->getValue($viewer))->toBe('');
+});
+
+it('invokes watch on QueryWatcher when watchQueries is called', function (): void {
+    // Arrange
+    $viewer = new CappadociaViewer();
+
+    // Act & Assert
+    $this->mock(QueryWatcher::class)
+        ->shouldReceive('watch')
+        ->once();
+
+    $viewer->watchQueries();
+});
+
+it('invokes stopWatching on QueryWatcher when stopWatchingQueries is called', function (): void {
+    // Arrange
+    $viewer = new CappadociaViewer();
+
+    // Act & Assert
+    $this->mock(QueryWatcher::class)
+        ->shouldReceive('stopWatching')
+        ->once();
+
+    $viewer->stopWatchingQueries();
 });
