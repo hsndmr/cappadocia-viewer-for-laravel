@@ -4,15 +4,20 @@ declare(strict_types=1);
 
 namespace Hsndmr\CappadociaViewer;
 
+use GuzzleHttp\Client;
 use Spatie\LaravelPackageTools\Package;
 use Hsndmr\CappadociaViewer\Watchers\Watcher;
+use Hsndmr\CappadociaViewer\Watchers\JobWatcher;
 use Hsndmr\CappadociaViewer\Watchers\LogWatcher;
+use Hsndmr\CappadociaViewer\Watchers\QueryWatcher;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
 class CappadociaViewerServiceProvider extends PackageServiceProvider
 {
     const WATCHERS = [
         LogWatcher::class,
+        QueryWatcher::class,
+        JobWatcher::class,
     ];
 
     public function configurePackage(Package $package): void
@@ -29,6 +34,7 @@ class CappadociaViewerServiceProvider extends PackageServiceProvider
 
     public function packageRegistered(): void
     {
+        $this->registerClient();
         $this->registerWatchers();
     }
 
@@ -42,6 +48,18 @@ class CappadociaViewerServiceProvider extends PackageServiceProvider
         foreach (self::WATCHERS as $watcherClass) {
             $this->app->singleton($watcherClass);
         }
+    }
+
+    protected function registerClient(): void
+    {
+        $this->app->singleton(CappadociaViewerClient::class, function () {
+            return new CappadociaViewerClient(
+                new Client([
+                    'base_uri' => config('cappadocia-viewer.server_url'),
+                    'timeout'  => config('cappadocia-viewer.timeout'),
+                ])
+            );
+        });
     }
 
     protected function bootWatchers(): void
