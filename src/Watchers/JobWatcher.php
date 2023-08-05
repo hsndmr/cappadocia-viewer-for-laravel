@@ -78,9 +78,9 @@ class JobWatcher extends Watcher
         return Str::startsWith($jobName, 'Laravel\Telescope');
     }
 
-    protected function getJobData(Job $job): mixed
+    protected function getJobData(Job $job): array
     {
-        return unserialize($job->payload()['data']['command']);
+        return ExtractProperties::from(unserialize($job->payload()['data']['command']));
     }
 
     protected function shouldHandleJob(Job $job): bool

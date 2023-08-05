@@ -7,9 +7,11 @@ use Illuminate\Contracts\Queue\Job;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Queue\Events\JobFailed;
 use Illuminate\Queue\Events\JobProcessed;
+use Hsndmr\CappadociaViewer\Tests\StubJob;
 use Illuminate\Queue\Events\JobProcessing;
 use Hsndmr\CappadociaViewer\Enums\BadgeType;
 use Hsndmr\CappadociaViewer\Enums\ViewerType;
+use Hsndmr\CappadociaViewer\ExtractProperties;
 use Hsndmr\CappadociaViewer\Watchers\JobWatcher;
 use Hsndmr\CappadociaViewer\Facades\CappadociaViewer;
 
@@ -344,11 +346,13 @@ it('returns job data correctly', function (): void {
 
     $jobMock = $this->mock(Job::class);
 
+    $stubJob = new StubJob();
+
     $jobMock
         ->shouldReceive('payload')
         ->andReturn([
             'data' => [
-                'command' => serialize(['command']),
+                'command' => serialize($stubJob),
             ],
         ]);
 
@@ -358,7 +362,7 @@ it('returns job data correctly', function (): void {
     $jobData = $getJobDataReflection->invoke($jobWatcher, $jobMock);
 
     // Assert
-    expect($jobData)->toBe(['command']);
+    expect($jobData)->toBe(ExtractProperties::from($stubJob));
 });
 
 it('identifies Laravel Telescope job correctly', function (): void {
