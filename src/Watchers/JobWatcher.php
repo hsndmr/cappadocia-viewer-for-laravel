@@ -12,12 +12,11 @@ use Illuminate\Queue\Events\JobProcessed;
 use Illuminate\Queue\Events\JobProcessing;
 use Hsndmr\CappadociaViewer\Enums\BadgeType;
 use Hsndmr\CappadociaViewer\Enums\ViewerType;
+use Hsndmr\CappadociaViewer\ExtractProperties;
 use Hsndmr\CappadociaViewer\Facades\CappadociaViewer;
 
 class JobWatcher extends Watcher
 {
-    protected bool $isWatching = true;
-
     public function register(): void
     {
         Event::listen(JobProcessing::class, [$this, 'handleJobProcessing']);
