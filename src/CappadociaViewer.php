@@ -7,6 +7,7 @@ namespace Hsndmr\CappadociaViewer;
 use Throwable;
 use Hsndmr\CappadociaViewer\Enums\BadgeType;
 use Hsndmr\CappadociaViewer\Enums\ViewerType;
+use Hsndmr\CappadociaViewer\Watchers\JobWatcher;
 use Hsndmr\CappadociaViewer\Watchers\QueryWatcher;
 use Hsndmr\CappadociaViewer\DataTransferObjects\ViewerDto;
 
@@ -64,6 +65,20 @@ class CappadociaViewer
     public function stopWatchingQueries(): self
     {
         app(QueryWatcher::class)->stopWatching();
+
+        return $this;
+    }
+
+    public function watchJobs(): self
+    {
+        app(JobWatcher::class)->watch();
+
+        return $this;
+    }
+
+    public function stopWatchingJobs(): self
+    {
+        app(JobWatcher::class)->stopWatching();
 
         return $this;
     }

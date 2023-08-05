@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Hsndmr\CappadociaViewer\Enums\BadgeType;
 use Hsndmr\CappadociaViewer\CappadociaViewer;
 use Hsndmr\CappadociaViewer\Enums\ViewerType;
+use Hsndmr\CappadociaViewer\Watchers\JobWatcher;
 use Hsndmr\CappadociaViewer\Watchers\QueryWatcher;
 use Hsndmr\CappadociaViewer\CappadociaViewerClient;
 
@@ -103,4 +104,28 @@ it('invokes stopWatching on QueryWatcher when stopWatchingQueries is called', fu
         ->once();
 
     $viewer->stopWatchingQueries();
+});
+
+it('invokes watch on JobWatcher when watchJobs is called', function (): void {
+    // Arrange
+    $viewer = new CappadociaViewer();
+
+    // Act & Assert
+    $this->mock(JobWatcher::class)
+        ->shouldReceive('watch')
+        ->once();
+
+    $viewer->watchJobs();
+});
+
+it('invokes stopWatching on JobWatcher when stopWatchingJobs is called', function (): void {
+    // Arrange
+    $viewer = new CappadociaViewer();
+
+    // Act & Assert
+    $this->mock(JobWatcher::class)
+        ->shouldReceive('stopWatching')
+        ->once();
+
+    $viewer->stopWatchingJobs();
 });
