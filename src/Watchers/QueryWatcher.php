@@ -28,8 +28,10 @@ class QueryWatcher extends Watcher
             ->setType(ViewerType::QUERY)
             ->setBadge('query')
             ->send([
-                'bindings' => $bindings,
-                'time'     => [
+                'bindings' => [
+                    'bindings' => $bindings,
+                ],
+                'time' => [
                     number_format($event->time, 2, '.', '').' ms',
                 ],
             ]);

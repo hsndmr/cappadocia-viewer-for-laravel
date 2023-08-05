@@ -52,8 +52,10 @@ it('handles query executed event', function (): void {
         ->shouldReceive('send')
         ->once()
         ->with([
-            'bindings' => [],
-            'time'     => ['1.00 ms'],
+            'bindings' => [
+                'bindings' => [],
+            ],
+            'time' => ['1.00 ms'],
         ]);
 
     /* @var QueryWatcher $queryWatcher */
