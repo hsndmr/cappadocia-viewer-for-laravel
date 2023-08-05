@@ -2,11 +2,12 @@
 
 declare(strict_types=1);
 
-use Hsndmr\CappadociaViewer\Builders\SenderViewerBuilder;
+use Hsndmr\CappadociaViewer\CappadociaViewer;
+use Hsndmr\CappadociaViewer\Facades\CappadociaViewer as Cappadocia;
 
 if (!function_exists('cappadocia')) {
-    function cappadocia(string $message = ''): SenderViewerBuilder
+    function cappadocia(string $message = ''): CappadociaViewer
     {
-        return new SenderViewerBuilder($message);
+        return Cappadocia::setMessage($message);
     }
 }
