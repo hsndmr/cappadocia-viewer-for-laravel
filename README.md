@@ -11,7 +11,7 @@
 
 ## Installation
 
-Prior to installing this package, ensure that you have already installed  [Cappadocia Viewer](https://github.com/hsndmr/cappadocia-viewer/releases/tag/0.0.2)
+Prior to installing this package, ensure that you have already installed  [Cappadocia Viewer](https://github.com/hsndmr/cappadocia-viewer/releases/tag/0.1.0)
 
 You can install the package via composer:
 
@@ -92,6 +92,14 @@ Log::info('This log will be shown in the viewer');
 </picture>
 
 
+### Showing Requests
+
+If you want to show requests, you can add `CAPPADOCIA_VIEWER_WATCH_REQUESTS=true` to your .env file. After that, you can see all requests in the viewer.
+
+<picture>
+<img alt="Cappadocia Viewer for Laravel" src="./art/showing_requests.png">
+</picture>
+
 ### Custom Messages
 
 If you want to show custom messages, you can use `cappadocia` helper function.
@@ -113,10 +121,9 @@ cappadocia('This is custom message with Badge')
 <img alt="Cappadocia Viewer for Laravel" src="./art/showing_custom_messages.png">
 </picture>
 
-
-
 ### Disabling Cappadocia Viewer
 To disable the Cappadocia Viewer, you can include `CAPPADOCIA_VIEWER_ENABLED=false` in your .env file. This could be particularly useful if you wish to disable it within a testing environment.
+
 ## Testing
 
 ```bash
