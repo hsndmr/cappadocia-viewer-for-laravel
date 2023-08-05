@@ -4,30 +4,71 @@ declare(strict_types=1);
 
 namespace Hsndmr\CappadociaViewer;
 
-use Illuminate\Support\Facades\Http;
-use Illuminate\Http\Client\PendingRequest;
+use Throwable;
+use Hsndmr\CappadociaViewer\Enums\BadgeType;
+use Hsndmr\CappadociaViewer\Enums\ViewerType;
 use Hsndmr\CappadociaViewer\DataTransferObjects\ViewerDto;
 
 class CappadociaViewer
 {
     protected bool $isServerAvailable = true;
+    protected ViewerType $type        = ViewerType::LOG;
+    protected ?BadgeType $badgeType   = null;
+    protected ?string $badge          = null;
+    protected string $message         = '';
 
-    public function sendViewer(ViewerDto $viewerDto): void
+    public function setType(ViewerType $type): self
     {
-        if (!$this->isServerAvailable) {
-            return;
-        }
+        $this->type = $type;
 
-        try {
-            $this->http()->post('viewer', $viewerDto->toArray());
-        } catch (\Throwable $th) {
-            $this->isServerAvailable = false;
-        }
+        return $this;
     }
 
-    public function http(): PendingRequest
+    public function setBadgeType(?BadgeType $badgeType): self
     {
-        return Http::baseUrl(config('cappadocia-viewer.server_url'))
-            ->timeout(config('cappadocia-viewer.timeout'));
+        $this->badgeType = $badgeType;
+
+        return $this;
+    }
+
+    public function setBadge(?string $badge): self
+    {
+        $this->badge = $badge;
+
+        return $this;
+    }
+
+    public function setMessage(string $message): self
+    {
+        $this->message = $message;
+
+        return $this;
+    }
+
+    protected function resetData(): void
+    {
+        $this->type      = ViewerType::LOG;
+        $this->badgeType = null;
+        $this->badge     = null;
+        $this->message   = '';
+    }
+
+    public function send(array $context = []): void
+    {
+        $viewerDto = new ViewerDto(
+            type: $this->type,
+            message: $this->message,
+            badge: $this->badge,
+            badgeType: $this->badgeType,
+            context: !empty($context) ? $context : null,
+        );
+
+        try {
+            app(CappadociaViewerClient::class)->send($viewerDto->toArray());
+        } catch (Throwable) {
+            $this->isServerAvailable = false;
+        }
+
+        $this->resetData();
     }
 }

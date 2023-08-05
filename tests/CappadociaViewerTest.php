@@ -2,66 +2,80 @@
 
 declare(strict_types=1);
 
-use Illuminate\Support\Facades\Http;
-use Illuminate\Http\Client\PendingRequest;
+use Hsndmr\CappadociaViewer\Enums\BadgeType;
 use Hsndmr\CappadociaViewer\CappadociaViewer;
 use Hsndmr\CappadociaViewer\Enums\ViewerType;
-use Hsndmr\CappadociaViewer\DataTransferObjects\ViewerDto;
+use Hsndmr\CappadociaViewer\CappadociaViewerClient;
 
-it('sends a POST request to the specified server URL', function (): void {
+it('sends a viewer message with specified badge, type, and context, then resets data', function (): void {
     // Arrange
-    $url = config('cappadocia-viewer.server_url').'/viewer';
-    $dto = new ViewerDto(ViewerType::LOG);
+    $viewer = $this->spy(CappadociaViewer::class)->makePartial();
 
-    Http::fake([
-        $url => Http::response([]),
+    /** @var CappadociaViewer $viewer */
+    $viewer = $viewer->setMessage('test message')
+        ->setBadge('test badge')
+        ->setBadgeType(BadgeType::SUCCESS)
+        ->setType(ViewerType::QUERY);
+
+    // Act & Assert
+    $this->mock(CappadociaViewerClient::class)
+        ->shouldReceive('send')
+        ->withArgs(function ($args) {
+            return $args['type'] === 'query' &&
+                $args['message'] === 'test message' &&
+                $args['badge'] === 'test badge' &&
+                $args['badgeType'] === 'success' &&
+                $args['context'] === [
+                    'data' => ['test'],
+                ];
+        })
+        ->once();
+
+    $viewer->send([
+        'data' => ['test'],
     ]);
 
-    $cappadociaViewer = new CappadociaViewer();
-
-    // Act
-    $cappadociaViewer->sendViewer($dto);
-
-    // Assert
-    Http::assertSent(function ($request) use ($url) {
-        return $request->url() == $url && $request->method() == 'POST';
-    });
-
+    /* @var \Mockery\LegacyMockInterface $viewer */
+    $viewer->shouldHaveReceived('resetData')->once();
 });
 
-it('does not send a POST request when the server is unavailable', function (): void {
+it('sends a viewer message with an empty context', function (): void {
     // Arrange
-    $cappadociaViewer = new CappadociaViewer();
-    $url              = config('cappadocia-viewer.server_url').'/viewer';
-    $dto              = new ViewerDto(ViewerType::LOG);
+    $viewer = new CappadociaViewer();
 
-    Http::fake([
-        $url => Http::response([], 500),
-    ]);
+    // Act & Assert
+    $this->mock(CappadociaViewerClient::class)
+        ->shouldReceive('send')
+        ->withArgs(function ($args) {
+            return $args['context'] === '';
+        })
+        ->once();
 
-    $cappadociaViewer->sendViewer($dto);
-
-    Http::fake([
-        $url => Http::response([]),
-    ]);
-
-    // Act
-    $cappadociaViewer->sendViewer($dto);
-
-    // Assert
-    Http::assertSentCount(1);
+    $viewer->send();
 });
 
-it('configures the HTTP timeout according to the configuration', function (): void {
+it('resets the viewer data to default values', function (): void {
     // Arrange
-    $timeout = config('cappadocia-viewer.timeout');
-
-    $cappadociaViewer = new CappadociaViewer();
+    $viewer = new CappadociaViewer();
+    $viewer->setType(ViewerType::QUERY)
+        ->setBadge('test badge')
+        ->setBadgeType(BadgeType::SUCCESS)
+        ->setMessage('test message');
 
     // Act
-    $http = $cappadociaViewer->http();
+    $resetDataReflection = new ReflectionMethod($viewer, 'resetData');
+    $resetDataReflection->invoke($viewer);
 
     // Assert
-    expect($http)->toBeInstanceOf(PendingRequest::class)
-        ->and($http->getOptions()['timeout'])->toBe($timeout);
+    $typeProperty = new ReflectionProperty($viewer, 'type');
+    expect($typeProperty->getValue($viewer))->toBe(ViewerType::LOG);
+
+    $badgeTypeProperty = new ReflectionProperty($viewer, 'badgeType');
+    expect($badgeTypeProperty->getValue($viewer))->toBeNull();
+
+    $badgeProperty = new ReflectionProperty($viewer, 'badge');
+    expect($badgeProperty->getValue($viewer))->toBeNull();
+
+    $messageProperty = new ReflectionProperty($viewer, 'message');
+    expect($messageProperty->getValue($viewer))->toBe('');
 });
