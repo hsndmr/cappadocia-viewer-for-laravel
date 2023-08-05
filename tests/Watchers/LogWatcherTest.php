@@ -71,7 +71,7 @@ it('should not send a message if shouldHandleLog method returns false', function
         ->shouldReceive('shouldHandleLog')
         ->with($eventMock)
         ->once()
-        ->andReturnTrue();
+        ->andReturnFalse();
 
     // Act & Assert
     CappadociaViewer::partialMock()->shouldNotReceive('setMessage');
@@ -87,7 +87,8 @@ it('registers to listen for MessageLogged events', function (): void {
     // Act & Assert
     Event::partialMock()
         ->shouldReceive('listen')
-        ->with(MessageLogged::class, [$logWatcher, 'handleLog']);
+        ->with(MessageLogged::class, [$logWatcher, 'handleLog'])
+        ->once();
 
     $logWatcher->register();
 });
