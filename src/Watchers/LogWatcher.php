@@ -10,7 +10,6 @@ use Illuminate\Log\Events\MessageLogged;
 use Hsndmr\CappadociaViewer\Enums\BadgeType;
 use Hsndmr\CappadociaViewer\Enums\ViewerType;
 use Hsndmr\CappadociaViewer\Facades\CappadociaViewer;
-use Hsndmr\CappadociaViewer\DataTransferObjects\ViewerDto;
 
 class LogWatcher extends Watcher
 {
@@ -25,22 +24,28 @@ class LogWatcher extends Watcher
             return;
         }
 
-        CappadociaViewer::sendViewer(new ViewerDto(
-            type: ViewerType::LOG,
-            message: $event->message,
-            badge: $event->level,
-            badgeType: BadgeType::fromLogLevel($event->level),
-            context: empty($event->context) ? null : $event->context,
-        ));
-
+        CappadociaViewer::setMessage($event->message)
+            ->setBadge($event->level)
+            ->setBadgeType(BadgeType::fromLogLevel($event->level))
+            ->setType(ViewerType::LOG)
+            ->send($event->context);
     }
 
     public function shouldHandleLog(MessageLogged $event): bool
     {
+        if (!$this->isWatching()) {
+            return false;
+        }
+
         if (isset($event->context['exception']) && $event->context['exception'] instanceof Throwable) {
             return false;
         }
 
         return true;
+    }
+
+    protected function getConfigName(): string
+    {
+        return 'logs';
     }
 }

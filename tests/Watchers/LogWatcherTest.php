@@ -2,57 +2,100 @@
 
 declare(strict_types=1);
 
-use Illuminate\Support\Facades\Log;
+use Mockery\MockInterface;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Log\Events\MessageLogged;
 use Hsndmr\CappadociaViewer\Enums\BadgeType;
 use Hsndmr\CappadociaViewer\Enums\ViewerType;
+use Hsndmr\CappadociaViewer\Watchers\LogWatcher;
 use Hsndmr\CappadociaViewer\Facades\CappadociaViewer;
 
 it('handles log event without exceptions', function (): void {
-    // Arrange & Assert
-    CappadociaViewer::shouldReceive('sendViewer')
-        ->once()
-        ->withArgs(function ($arg) {
-            return $arg->type === ViewerType::LOG &&
-                $arg->message === 'test message' &&
-                $arg->badge === 'info' &&
-                $arg->badgeType === BadgeType::fromLogLevel('info');
-        });
 
-    // Act
-    Log::info('test message');
-});
-
-it('handles log event with not empty context', function (): void {
     // Arrange
-    $context = ['key' => 'value'];
+    $logWatcher = $this->spy(LogWatcher::class)->makePartial();
 
-    //  Assert
-    CappadociaViewer::shouldReceive('sendViewer')
+    $logWatcher
+        ->shouldReceive('shouldHandleLog')
         ->once()
-        ->withArgs(function ($arg) use ($context) {
-            return $arg->context === $context;
-        });
+        ->andReturnTrue();
 
-    // Act
-    Log::info('test message', $context);
+    // Act & Assert
+    $eventMock = $this->mock(MessageLogged::class, function (MockInterface $mock): void {
+        $mock->message = 'message';
+        $mock->level   = 'info';
+        $mock->context = [];
+    });
+
+    CappadociaViewer::partialMock()
+        ->shouldReceive('setMessage')
+        ->once()
+        ->with('message')
+        ->andReturnSelf();
+
+    CappadociaViewer::partialMock()
+        ->shouldReceive('setBadge')
+        ->once()
+        ->with('info')
+        ->andReturnSelf();
+
+    CappadociaViewer::partialMock()
+        ->shouldReceive('setBadgeType')
+        ->once()
+        ->with(BadgeType::INFO)
+        ->andReturnSelf();
+
+    CappadociaViewer::partialMock()
+        ->shouldReceive('setType')
+        ->once()
+        ->with(ViewerType::LOG)
+        ->andReturnSelf();
+
+    CappadociaViewer::partialMock()
+        ->shouldReceive('send')
+        ->once()
+        ->with([]);
+
+    /* @var LogWatcher $logWatcher */
+    $logWatcher->handleLog($eventMock);
 });
 
-it('handles log event with empty context', function (): void {
-    // Arrange && Assert
-    CappadociaViewer::shouldReceive('sendViewer')
-        ->once()
-        ->withArgs(function ($arg) {
-            return $arg->context === null;
-        });
+it('should not send a message if shouldHandleLog method returns false', function (): void {
 
-    // Act
-    Log::info('test message');
+    // Arrange
+    $logWatcher = $this->spy(LogWatcher::class)->makePartial();
+
+    $eventMock = $this->mock(MessageLogged::class);
+
+    $logWatcher
+        ->shouldReceive('shouldHandleLog')
+        ->with($eventMock)
+        ->once()
+        ->andReturnTrue();
+
+    // Act & Assert
+    CappadociaViewer::partialMock()->shouldNotReceive('setMessage');
+
+    /* @var LogWatcher $logWatcher */
+    $logWatcher->handleLog($eventMock);
 });
 
-it('does not handle log event with exception in context', function (): void {
-    // Arrange & Assert
-    CappadociaViewer::shouldReceive('sendViewer')->never();
+it('registers to listen for MessageLogged events', function (): void {
+    // Arrange
+    $logWatcher = new LogWatcher();
 
-    // Act
-    Log::info('test message', ['exception' => new Exception('test exception')]);
+    // Act & Assert
+    Event::partialMock()
+        ->shouldReceive('listen')
+        ->with(MessageLogged::class, [$logWatcher, 'handleLog']);
+
+    $logWatcher->register();
+});
+
+it('returns config name correctly', function (): void {
+    $logWatcher = new LogWatcher();
+
+    $getConfigNameReflection = new ReflectionMethod($logWatcher, 'getConfigName');
+
+    expect($getConfigNameReflection->invoke($logWatcher))->toBe('logs');
 });
