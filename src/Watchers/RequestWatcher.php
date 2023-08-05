@@ -34,7 +34,7 @@ class RequestWatcher extends Watcher
 
         CappadociaViewer::setMessage($data['uri'])
             ->setBadge($data['method'])
-            ->setType(ViewerType::QUERY)
+            ->setType(ViewerType::REQUEST)
             ->send($data);
     }
 

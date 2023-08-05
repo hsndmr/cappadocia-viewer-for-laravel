@@ -300,7 +300,7 @@ it('handles request correctly when watching', function (): void {
                 ->once();
 
             $mock->shouldReceive('setType')
-                ->with(ViewerType::QUERY)
+                ->with(ViewerType::REQUEST)
                 ->andReturnSelf()
                 ->once();
 
