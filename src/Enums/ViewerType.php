@@ -9,13 +9,15 @@ enum ViewerType
     case LOG;
     case JOB;
     case QUERY;
+    case REQUEST;
 
     public function type(): string
     {
         return match ($this) {
-            self::LOG   => 'log',
-            self::JOB   => 'job',
-            self::QUERY => 'query',
+            self::LOG     => 'log',
+            self::JOB     => 'job',
+            self::QUERY   => 'query',
+            self::REQUEST => 'request',
         };
     }
 }
