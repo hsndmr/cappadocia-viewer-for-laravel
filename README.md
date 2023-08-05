@@ -29,19 +29,94 @@ This is the contents of the published config file:
 
 ```php
 return [
-    'server_url' => env('CAPPADOCIA_VIEWER_SERVER_URL', 'http://127.0.0.1:9091'),
-    'timeout'    => env('CAPPADOCIA_VIEWER_TIMEOUT', 3),
-    'enabled'    => env('CAPPADOCIA_VIEWER_ENABLED', true),
+    'server_url'    => env('CAPPADOCIA_VIEWER_SERVER_URL', 'http://127.0.0.1:9091'),
+    'timeout'       => env('CAPPADOCIA_VIEWER_TIMEOUT', 3),
+    'enabled'       => env('CAPPADOCIA_VIEWER_ENABLED', true),
+    'watch_logs'    => env('CAPPADOCIA_VIEWER_WATCH_LOGS', true),
+    'watch_jobs'    => env('CAPPADOCIA_VIEWER_WATCH_JOBS', false),
+    'watch_queries' => env('CAPPADOCIA_VIEWER_WATCH_QUERIES', false),
 ];
 ```
 
 ## Usage
-If you want to send a message manually to Cappadocia Viewer, you can use `cappadocia` method. You can see examples below.
+
+### Showing Queries
+
+You can show queries by using `cappadocia` helper function.
 
 ````php
-cappadocia('your message')->send(['context' => 'data']);
+    cappadocia()->watchQueries();
+    User::latest()->first();
+    cappadocia()->stopWatchingQueries();
+    
+    // This query will not be shown in the viewer
+    User::first()->first();
 ````
 
+<picture>
+  <img alt="Cappadocia Viewer for Laravel" src="./art/showing_queries.png">
+</picture>
+
+If you want to show all queries, you can add `CAPPADOCIA_VIEWER_WATCH_QUERIES=true` to your .env file.
+
+### Showing Jobs
+You can show jobs by using `cappadocia` helper function. 
+
+```` php
+cappadocia()->watchJobs();
+CappadociaViewerJob::dispatchSync('viewer');
+cappadocia()->stopWatchingJobs();
+
+// This job will not be shown in the viewer
+CappadociaViewerJob::dispatchSync('another viewer');
+````
+
+<picture>
+  <img alt="Cappadocia Viewer for Laravel" src="./art/showing_jobs.png">
+</picture>
+
+If you are utilizing Laravel Horizon, you can insert `CAPPADOCIA_VIEWER_WATCH_JOBS=true` into your .env file. This will enable you to view all jobs in the viewer
+```` php
+CappadociaViewerJob::dispatch('viewer');
+````
+
+### Showing Logs
+
+Logs are shown by default. If you want to disable it, you can add `CAPPADOCIA_VIEWER_WATCH_LOGS=false` to your .env file.
+```` php
+Log::info('This log will be shown in the viewer');
+````
+
+<picture>
+<img alt="Cappadocia Viewer for Laravel" src="./art/showing_logs.png">
+</picture>
+
+
+### Custom Messages
+
+If you want to show custom messages, you can use `cappadocia` helper function.
+
+```` php
+cappadocia('This is custom message')
+    ->send([
+        'custom' => 'data',
+    ]);
+
+cappadocia('This is custom message with Badge')
+    ->setBadge('Badge')
+    ->send([
+        'custom' => 'data',
+    ]);
+````
+
+<picture>
+<img alt="Cappadocia Viewer for Laravel" src="./art/showing_custom_messages.png">
+</picture>
+
+
+
+### Disabling Cappadocia Viewer
+To disable the Cappadocia Viewer, you can include `CAPPADOCIA_VIEWER_ENABLED=false` in your .env file. This could be particularly useful if you wish to disable it within a testing environment.
 ## Testing
 
 ```bash
