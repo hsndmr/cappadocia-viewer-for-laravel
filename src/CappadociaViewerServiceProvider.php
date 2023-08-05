@@ -10,6 +10,7 @@ use Hsndmr\CappadociaViewer\Watchers\Watcher;
 use Hsndmr\CappadociaViewer\Watchers\JobWatcher;
 use Hsndmr\CappadociaViewer\Watchers\LogWatcher;
 use Hsndmr\CappadociaViewer\Watchers\QueryWatcher;
+use Hsndmr\CappadociaViewer\Watchers\RequestWatcher;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
 class CappadociaViewerServiceProvider extends PackageServiceProvider
@@ -18,6 +19,7 @@ class CappadociaViewerServiceProvider extends PackageServiceProvider
         LogWatcher::class,
         QueryWatcher::class,
         JobWatcher::class,
+        RequestWatcher::class,
     ];
 
     public function configurePackage(Package $package): void
